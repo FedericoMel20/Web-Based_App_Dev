@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal To-Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        #taskInput {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #addTaskBtn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #addTaskBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #addTaskBtn:active {
+            transform: translateY(0);
+        }
+
+        #taskList {
+            list-style: none;
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .task-item:hover {
+            transform: translateX(5px);
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            color: #28a745;
+            opacity: 0.7;
+        }
+
+        .task-item.completed {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .task-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .complete-btn, .delete-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .complete-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .complete-btn:hover {
+            background: #218838;
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 18px;
+        }
+
+        .task-counter {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 My To-Do List</h1>
+        
+        <div class="input-section">
+            <input 
+                type="text" 
+                id="taskInput" 
+                placeholder="Enter a new task..."
+                autocomplete="off"
+            >
+            <button id="addTaskBtn">Add Task</button>
+        </div>
+
+        <ul id="taskList"></ul>
+
+        <div class="task-counter">
+            <span id="taskCount">0 tasks</span>
+        </div>
+    </div>
+
+    <script>
+        const taskInput = document.getElementById('taskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskList = document.getElementById('taskList');
+        const taskCount = document.getElementById('taskCount');
+
+        // Function to update task counter
+        function updateTaskCount() {
+            const totalTasks = taskList.children.length;
+            taskCount.textContent = totalTasks === 1 ? '1 task' : `${totalTasks} tasks`;
+        }
+
+        // Function to add a new task
+        function addTask() {
+            const taskText = taskInput.value.trim();
+
+            // Validate input
+            if (taskText === '') {
+                alert('Please enter a task!');
+                return;
+            }
+
+            // Create task item (li)
+            const taskItem = document.createElement('li');
+            taskItem.className = 'task-item';
+
+            // Create task text span
+            const taskTextSpan = document.createElement('span');
+            taskTextSpan.className = 'task-text';
+            taskTextSpan.textContent = taskText;
+
+            // Create button container
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'task-buttons';
+
+            // Create Complete button
+            const completeBtn = document.createElement('button');
+            completeBtn.className = 'complete-btn';
+            completeBtn.textContent = 'Complete';
+            completeBtn.onclick = function() {
+                taskItem.classList.toggle('completed');
+                taskTextSpan.classList.toggle('completed');
+                
+                // Change button text
+                if (taskItem.classList.contains('completed')) {
+                    completeBtn.textContent = 'Undo';
+                } else {
+                    completeBtn.textContent = 'Complete';
+                }
+            };
+
+            // Create Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = function() {
+                taskItem.remove();
+                updateTaskCount();
+            };
+
+            // Append buttons to container
+            buttonContainer.appendChild(completeBtn);
+            buttonContainer.appendChild(deleteBtn);
+
+            // Append elements to task item
+            taskItem.appendChild(taskTextSpan);
+            taskItem.appendChild(buttonContainer);
+
+            // Append task item to list
+            taskList.appendChild(taskItem);
+
+            // Clear input field
+            taskInput.value = '';
+
+            // Update counter
+            updateTaskCount();
+
+            // Focus back to input
+            taskInput.focus();
+        }
+
+        // Event listener for Add Task button
+        addTaskBtn.addEventListener('click', addTask);
+
+        // Event listener for Enter key
+        taskInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        // Initialize counter
+        updateTaskCount();
+    </script>
+</body>
+</html>
