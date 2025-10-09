@@ -1,15 +1,12 @@
 <script setup>
-  import HelloVue from './components/HelloVue.vue'
+  import HelloVue from './components/HelloVue.vue';
+  import Counter from './components/Counter.vue';
+  import WebPage from './components/WebPage.vue';
 </script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
-
-  <HelloVue/>
+ 
+  <WebPage/>
 </template>
 
 <style scoped></style>
